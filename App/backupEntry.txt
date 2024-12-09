@@ -1,6 +1,6 @@
 import React from "react";
 
-const Entry = ({ entryID, username, image, values, onDelete, onUpdate }) => {
+const Entry = ({ entryID, username, image, values, onDelete }) => {
   return (
     <div>
       <div>
@@ -13,10 +13,8 @@ const Entry = ({ entryID, username, image, values, onDelete, onUpdate }) => {
             <li key={value.part}>{value.part}</li>
           ))}
         </ul>
-        <button onClick={() => onDelete(entryID, username)}>DELETE</button>
-        <br />
-        <br />
-        <button onClick={() => onUpdate(entryID, username)}>UPDATE</button>
+        <button 
+        onClick={() => onDelete(entryID, username)}>DELETE</button>
       </div>
     </div>
   );

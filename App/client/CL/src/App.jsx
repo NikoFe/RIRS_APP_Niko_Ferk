@@ -25,11 +25,6 @@ const App = () => {
   const [sign, setSign] = useState("true");
   const [username, setUserName] = useState("Default");
 
-  const setName = (value) => {
-    console.log("SETTING NAME!!!!!!!!!!!!!!!!");
-    setUserName(value);
-  };
-
   const changeSign = () => {
     setSign("false");
   };
@@ -68,6 +63,16 @@ const App = () => {
         },
       ]
     );
+  };
+
+  const updateEntry = (id, usernameParam) => {
+    console.log("updating!: " + id + "/" + entries.entryID);
+    if (username == usernameParam) {
+      alert("WORKE");
+    } else {
+      alert("DENIED");
+      return;
+    }
   };
 
   const deleteEntry = (id, usernameParam) => {
@@ -120,7 +125,11 @@ const App = () => {
       </button>
       <br />
       <br />
-      <EntryList entries={entries} onDelete={deleteEntry} />
+      <EntryList
+        entries={entries}
+        onDelete={deleteEntry}
+        onUpdate={updateEntry}
+      />
     </div>
   );
 };

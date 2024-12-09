@@ -1,7 +1,7 @@
 import Entry from "./Entry";
 import React, { useEffect, useState } from "react";
 
-const EntryList = ({ entries, onDelete }) => {
+const EntryList = ({ entries, onDelete, onUpdate }) => {
   return (
     <>
       {entries.length === 0 && "No Entries"}
@@ -14,6 +14,7 @@ const EntryList = ({ entries, onDelete }) => {
             image={entry.image}
             values={entry.values}
             onDelete={onDelete}
+            onUpdate={onUpdate}
           ></Entry>
         );
       })}
