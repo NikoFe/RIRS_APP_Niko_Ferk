@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const PORT = 5000;
 const mysql = require("mysql2");
+const { v4: uuidv4 } = require("uuid");
 
 process.on("SIGTERM ", () => {
   connection.end((err) => {
@@ -53,26 +54,98 @@ app.get("/", (req, res) => {
   });
 });
 
-let currentId = 1;
-
 app.post("/entries", (req, res) => {
-  const { id, name, username } = req.body; // Extract data from request body
+  const { id, name, username, values } = req.body; // Extract data from request body
 
-  const query = `INSERT INTO entry VALUES (1, 'entry1', 41)`;
+  entryCount = parseInt("SELECT COUNT(*) FROM entry");
+  entryPartCount = parseInt("SELECT COUNT(*) FROM entry_part");
+  userCount = parseInt("SELECT COUNT(*) FROM user");
+  partsCount = parseInt("SELECT COUNT(*) FROM parts");
 
-  connection.query(query, [id, name, username], (error, results) => {
+  entry_id = Math.floor(Math.random() * 10000);
+  console.log("ENTRY_ID: ", entry_id);
+
+  const query1 = `INSERT INTO entry VALUES (${entry_id}, '${name}', 41)`;
+
+  connection.query(query1, [id, name, username, values], (error, results) => {
     if (error) {
       console.error("Error executing query:", error);
       res.status(500).send("Database error");
       return;
     }
-    console.log("Query result:", results);
-    res.status(200).send("Entry added successfully");
+    console.log("Query result1 :", results);
   });
+
+  for (i = 0; i < values.length; i++) {
+    console.log("ENTRY_ID 2: ", entry_id);
+
+    ////////////////////////////////////////////
+    console.log("VALUES:" + values[i].part);
+    console.log("VALUES:" + values[i].price);
+
+    parts_id = Math.floor(Math.random() * 10000);
+
+    const query2 = `INSERT INTO parts (id,name,price) VALUES (${parts_id}, '${values[
+      i
+    ].part.toString()}',${values[i].price})`;
+
+    connection.query(query2, (error, results) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Database error");
+        return;
+      }
+      console.log("Query result2 :", results);
+    });
+
+    const query3 = `INSERT INTO entry_parts (Entry_id, User_id, Parts_id) VALUES  (${entry_id}, 41,${parts_id})`;
+    console.log("ENTRY_ID 3: ", entry_id);
+
+    connection.query(query3, (error, results) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Database error");
+        return;
+      }
+      console.log("Query result3 :", results);
+    });
+  } ///////////////////////////////////////////////////////
+
+  //res.status(200).send("Entry added successfully");
 });
 
 app.get("/entries", (req, res) => {
+  const query = "SELECT * FROM entry";
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Database error");
+      entries = results;
+      return;
+    }
+  });
+
   res.json(entries);
+});
+
+app.post("/sign_in", (req, res) => {
+  const { username, password } = req.body;
+  console.log("USERNAME: ", username, " PASSWORD: ", password);
+  const query = `SELECT * FROM user WHERE name= '${username}' AND password='${password}' `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Database error");
+      return;
+    }
+    console.log("RESULTS: ", results);
+    console.log("RESULTS length: ", results.length);
+    const rowCount = results.length;
+
+    res.status(200).send({ rowCount, data: results });
+  });
 });
 
 app.listen(PORT, () => console.log("Listening..."));

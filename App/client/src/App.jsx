@@ -52,7 +52,7 @@ const App = () => {
       const response = await axios.get(API_URL);
       //setEntries((entries) => [...entries, response.data]);
 
-      console.log("RESPONSE: ", response.data);
+      console.log("FETCHING RESPONSE: ", response.data);
       const data = response.data;
       console.log("data: ", data);
       setEntries(data);
@@ -73,6 +73,7 @@ const App = () => {
         id: entry.entryID,
         name: entry.name,
         username: entry.username,
+        values: entry.values,
       });
       //setEntries((entries) => [...entries, response.data]);
 

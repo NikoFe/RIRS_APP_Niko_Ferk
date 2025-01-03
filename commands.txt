@@ -1,0 +1,9 @@
+SELECT * FROM entry parts;
+SELECT * FROM entry;
+SELECT * FROM parts;
+
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE FROM entry_parts;
+DELETE FROM entry;
+DELETE FROM parts;
