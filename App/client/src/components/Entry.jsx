@@ -6,12 +6,19 @@ const getParts = () => {
 };
 
 const getUsername = async (id) => {
-  const response = await axios.post("http://localhost:5000/matching_user", {
-    id: id,
-  });
-  console.log("USERNAME FINAL: ", response.data);
+  console.log("GET USERNAME ID_ ", id);
+  if (id != null && id != undefined) {
+    const response = await axios.post("http://localhost:5000/matching_user", {
+      id: id,
+    });
+    console.log("USERNAME FINAL: ", response.data.username);
+    return response.data.username;
+  } else {
+    console.log("UNDEFINED");
+    return "undefined";
+  }
 
-  return "a";
+  // return "a";
 };
 
 const Entry = ({ entryID, name, image, values, onDelete, onUpdate }) => {
@@ -22,8 +29,8 @@ const Entry = ({ entryID, name, image, values, onDelete, onUpdate }) => {
       const fetchedUsername = await getUsername(entryID);
       setUsername(fetchedUsername);
     };
-    fetchUsername(); // Call the function to fetch the username
-  }, [entryID]); // Dependency array ensures this runs when `entryID` changes
+    fetchUsername();
+  }, [entryID]);
 
   return (
     <div>

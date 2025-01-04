@@ -155,7 +155,9 @@ app.post("/sign_in", (req, res) => {
 app.post("/matching_user", (req, res) => {
   const { id } = req.body;
 
-  const query = `  SELECT * FROM entry JOIN user ON user.id = entry.User_id  WHERE entry.id = ${id};`;
+  // const query = `  SELECT * FROM entry JOIN user ON user.id = entry.User_id  WHERE entry.id = ${id};`;
+
+  const query = `  SELECT user.name FROM entry JOIN user ON user.id = entry.User_id  WHERE entry.id = ${id};`;
 
   console.log("QUERY: ", query);
 
@@ -166,12 +168,11 @@ app.post("/matching_user", (req, res) => {
       return;
     }
     entries = results;
-    console.log("MATCHING RESULT: ", results);
-    res.status(200).send({ data: results });
-  });
+    const username = results.length > 0 ? results[0].name : null;
+    console.log("MATCHING RESULT: ", username);
 
-  res.json(entries);
-  res.status(200).send({ data: entries });
+    res.status(200).send({ username });
+  });
 });
 
 app.listen(PORT, () => console.log("Listening..."));

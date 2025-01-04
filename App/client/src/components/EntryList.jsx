@@ -14,15 +14,19 @@ onUpdate={onUpdate}
 ></Entry>
 */
 
+function print(entries) {
+  console.log("ENTRYLIST: ", entries);
+}
 const EntryList = ({ entries, onDelete, onUpdate }) => {
   return (
     <>
-      {entries.length === 0 && "No Entries"}
+      {print(entries)}
+      {entries.length <= 0 && "No Entries"}
       {entries.length > 0 &&
         entries.map((entry) => {
           return (
             <Entry
-              key={entry.id}
+              entryID={entry.id}
               name={entry.name}
               image={"image"}
               values={entry.values}
