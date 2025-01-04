@@ -115,6 +115,7 @@ app.post("/entries", (req, res) => {
 });
 
 app.get("/entries", (req, res) => {
+  console.log("/////////////////////////////////////////////");
   const query = "SELECT * FROM entry";
 
   connection.query(query, (err, results) => {
@@ -124,9 +125,12 @@ app.get("/entries", (req, res) => {
       entries = results;
       return;
     }
+    entries = results;
+    console.log("entries: ", entries);
   });
 
   res.json(entries);
+  res.status(200).send({ data: entries });
 });
 
 app.post("/sign_in", (req, res) => {
@@ -146,6 +150,28 @@ app.post("/sign_in", (req, res) => {
 
     res.status(200).send({ rowCount, data: results });
   });
+});
+
+app.post("/matching_user", (req, res) => {
+  const { id } = req.body;
+
+  const query = `  SELECT * FROM entry JOIN user ON user.id = entry.User_id  WHERE entry.id = ${id};`;
+
+  console.log("QUERY: ", query);
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).send("Database error");
+      return;
+    }
+    entries = results;
+    console.log("MATCHING RESULT: ", results);
+    res.status(200).send({ data: results });
+  });
+
+  res.json(entries);
+  res.status(200).send({ data: entries });
 });
 
 app.listen(PORT, () => console.log("Listening..."));

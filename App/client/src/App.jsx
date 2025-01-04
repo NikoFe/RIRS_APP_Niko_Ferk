@@ -5,19 +5,6 @@ import Form from "./components/Form";
 import SignIn from "./components/SignIn";
 import "./App.css";
 
-/*
-  const [backendData, setBackendData] = useState([{}]);
-  const [message, setMessage] = useState("");
-  h1>React and Express App</h1>
-  <button onClick={apiCall}>Make API call</button>
-
-const apiCall = () => {
-  axios.get("http://localhost:5000/").then((response) => {
-    //this console.log will be in our frontend console
-    console.log(response.data.message);
-  });
-};*/
-
 const App = () => {
   const [visible, setvisible] = useState("false");
   const [users, setUsers] = useState([]);
@@ -41,22 +28,18 @@ const App = () => {
     fetchEntries();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated entries:", entries);
-    console.log("Updated entries:", entries.length);
-  }, [entries]);
+  useEffect(() => {}, [entries]);
 
   const fetchEntries = async () => {
-    console.log("FETCHING ENTRIES");
+    console.log("FETCH ENTRIES: ", entries);
     try {
       const response = await axios.get(API_URL);
       //setEntries((entries) => [...entries, response.data]);
+      console.log("AAAAA: ", response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
 
-      console.log("FETCHING RESPONSE: ", response.data);
-      const data = response.data;
-      console.log("data: ", data);
       setEntries(data);
-      // console.log("ENTRIES: ", entries);
+      console.log("ENTRIES: ", response.data);
     } catch (error) {
       console.error("Error fetching entries", error);
     }
@@ -77,9 +60,7 @@ const App = () => {
       });
       //setEntries((entries) => [...entries, response.data]);
 
-      console.log("RESPONSE: ", response.data);
       const data = response.data;
-      console.log("data: ", data);
       setEntries(data);
       // console.log("ENTRIES: ", entries);
     } catch (error) {
@@ -88,9 +69,6 @@ const App = () => {
   };
 
   const createNewEntry = (name, username, values) => {
-    console.log("values:!", values);
-    console.log("entries 1:!", entries);
-
     const newEntry = {
       name: name,
       entryID: Math.random() * 1000,
@@ -158,12 +136,13 @@ const App = () => {
       </button>
       <br />
       <br />
-
-      <EntryList
-        entries={entries}
-        onDelete={deleteEntry}
-        onUpdate={updateEntry}
-      />
+      {
+        <EntryList
+          entries={entries}
+          onDelete={deleteEntry}
+          onUpdate={updateEntry}
+        />
+      }
     </div>
   );
 };

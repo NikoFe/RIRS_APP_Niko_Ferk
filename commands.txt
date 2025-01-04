@@ -1,9 +1,12 @@
-SELECT * FROM entry parts;
 SELECT * FROM entry;
+SELECT * FROM entry_parts;
 SELECT * FROM parts;
 
 SET SQL_SAFE_UPDATES = 0;
 
+
 DELETE FROM entry_parts;
 DELETE FROM entry;
 DELETE FROM parts;
+
+SELECT * FROM entry JOIN user ON user.id = entry.User_id  WHERE id = 4571;

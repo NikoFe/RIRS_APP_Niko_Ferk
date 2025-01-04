@@ -29,7 +29,6 @@ const InputList = ({ CreateFunction, visibilityFunction, username }) => {
       price: row.price,
       key: uuidv4(),
     }));
-    console.log("ROWS |||||||||||||: ", values);
 
     CreateFunction("placeholder_name", username, values);
 
@@ -38,7 +37,6 @@ const InputList = ({ CreateFunction, visibilityFunction, username }) => {
   };
 
   const handleChange = (index, field, value) => {
-    console.log("index:" + index + " field: " + field + " value: " + value);
     const updatedRows = rows.map((row, i) =>
       i === index ? { ...row, [field]: value } : row
     );

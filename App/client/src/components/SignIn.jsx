@@ -13,7 +13,6 @@ const SignIn = ({ addUser, signFunction, setName }) => {
   };
 
   const validate_sign_in = async (usr, pss) => {
-    console.log("CHECKING SIGN IN");
     try {
       //const response = await axios.get("http://localhost:5000/sign_in");
 
@@ -22,11 +21,10 @@ const SignIn = ({ addUser, signFunction, setName }) => {
         username: usr,
         password: pss,
       });
-      console.log("LENGTH--------------: ", response);
 
       //setEntries((entries) => [...entries, response.data]);
 
-      if (response.rowCount == 1) {
+      if (response.data.rowCount == 1) {
         return true;
       } else {
         return false;
@@ -44,7 +42,7 @@ const SignIn = ({ addUser, signFunction, setName }) => {
       setName(username);
 
       const valid = await validate_sign_in(username, password);
-      console.log("VALID? : ", valid);
+      //console.log("VALID? : ", valid);
       if (valid) {
         signFunction();
       }
