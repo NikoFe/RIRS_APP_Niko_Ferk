@@ -39,7 +39,6 @@ connection.query("SELECT * FROM entry", (err, rows, fields) => {
 
     return;
   }
-  console.log("Rows returned:", rows);
   //  console.log("The solution is: ", rows[0].solution);
 });
 
@@ -54,64 +53,73 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/entries", (req, res) => {
-  const { id, name, username, values } = req.body; // Extract data from request body
+app.post("/entries", async (req, res) => {
+  const { id, name, username, values } = req.body;
 
-  entryCount = parseInt("SELECT COUNT(*) FROM entry");
-  entryPartCount = parseInt("SELECT COUNT(*) FROM entry_part");
-  userCount = parseInt("SELECT COUNT(*) FROM user");
-  partsCount = parseInt("SELECT COUNT(*) FROM parts");
+  const entry_id = Math.floor(Math.random() * 10000);
 
-  entry_id = Math.floor(Math.random() * 10000);
-  console.log("ENTRY_ID: ", entry_id);
+  try {
+    // Step 1: Fetch user_id
+    const userQuery = `SELECT id FROM user WHERE name ='${username}'`;
+    const userResults = await new Promise((resolve, reject) => {
+      connection.query(userQuery, (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
+    });
 
-  const query1 = `INSERT INTO entry VALUES (${entry_id}, '${name}', 41)`;
+    const user_id = userResults[0]?.id;
 
-  connection.query(query1, [id, name, username, values], (error, results) => {
-    if (error) {
-      console.error("Error executing query:", error);
-      res.status(500).send("Database error");
-      return;
+    if (!user_id) {
+      return res.status(404).send({ error: "User not found" });
     }
-    console.log("Query result1 :", results);
-  });
 
-  for (i = 0; i < values.length; i++) {
-    console.log("ENTRY_ID 2: ", entry_id);
+    console.log("Fetched User ID:", user_id);
 
-    ////////////////////////////////////////////
-    console.log("VALUES:" + values[i].part);
-    console.log("VALUES:" + values[i].price);
-
-    parts_id = Math.floor(Math.random() * 10000);
-
-    const query2 = `INSERT INTO parts (id,name,price) VALUES (${parts_id}, '${values[
-      i
-    ].part.toString()}',${values[i].price})`;
-
-    connection.query(query2, (error, results) => {
-      if (error) {
-        console.error("Error executing query:", error);
-        res.status(500).send("Database error");
-        return;
-      }
-      console.log("Query result2 :", results);
+    // Step 2: Insert into entry table
+    const entryQuery = `INSERT INTO entry VALUES (${entry_id}, '${name}', ${user_id})`;
+    await new Promise((resolve, reject) => {
+      connection.query(entryQuery, (error, results) => {
+        if (error) return reject(error);
+        resolve(results);
+      });
     });
 
-    const query3 = `INSERT INTO entry_parts (Entry_id, User_id, Parts_id) VALUES  (${entry_id}, 41,${parts_id})`;
-    console.log("ENTRY_ID 3: ", entry_id);
+    console.log("Inserted into entry table");
 
-    connection.query(query3, (error, results) => {
-      if (error) {
-        console.error("Error executing query:", error);
-        res.status(500).send("Database error");
-        return;
-      }
-      console.log("Query result3 :", results);
-    });
-  } ///////////////////////////////////////////////////////
+    // Step 3: Process values and insert into parts and entry_parts tables
+    for (const value of values) {
+      const parts_id = Math.floor(Math.random() * 10000);
 
-  //res.status(200).send("Entry added successfully");
+      // Insert into parts table
+      const partsQuery = `INSERT INTO parts (id, name, price) VALUES (${parts_id}, '${value.part}', ${value.price})`;
+      await new Promise((resolve, reject) => {
+        connection.query(partsQuery, (error, results) => {
+          if (error) return reject(error);
+          resolve(results);
+        });
+      });
+
+      console.log("Inserted into parts table");
+
+      // Insert into entry_parts table
+      const entryPartsQuery = `INSERT INTO entry_parts (Entry_id, User_id, Parts_id) VALUES (${entry_id}, ${user_id}, ${parts_id})`;
+      await new Promise((resolve, reject) => {
+        connection.query(entryPartsQuery, (error, results) => {
+          if (error) return reject(error);
+          resolve(results);
+        });
+      });
+
+      console.log("Inserted into entry_parts table");
+    }
+
+    // Step 4: Send success response
+    res.status(200).send({ message: "Entry and parts added successfully" });
+  } catch (error) {
+    console.error("Error during database operations:", error);
+    res.status(500).send({ error: "Database error occurred" });
+  }
 });
 
 app.get("/entries", (req, res) => {
@@ -135,7 +143,7 @@ app.get("/entries", (req, res) => {
 
 app.post("/sign_in", (req, res) => {
   const { username, password } = req.body;
-  console.log("USERNAME: ", username, " PASSWORD: ", password);
+  //console.log("USERNAME: ", username, " PASSWORD: ", password);
   const query = `SELECT * FROM user WHERE name= '${username}' AND password='${password}' `;
 
   connection.query(query, (err, results) => {
@@ -144,8 +152,6 @@ app.post("/sign_in", (req, res) => {
       res.status(500).send("Database error");
       return;
     }
-    console.log("RESULTS: ", results);
-    console.log("RESULTS length: ", results.length);
     const rowCount = results.length;
 
     res.status(200).send({ rowCount, data: results });
@@ -159,8 +165,6 @@ app.post("/matching_user", (req, res) => {
 
   const query = `  SELECT user.name FROM entry JOIN user ON user.id = entry.User_id  WHERE entry.id = ${id};`;
 
-  console.log("QUERY: ", query);
-
   connection.query(query, (err, results) => {
     if (err) {
       console.error("Error executing query:", err);
@@ -169,7 +173,7 @@ app.post("/matching_user", (req, res) => {
     }
     entries = results;
     const username = results.length > 0 ? results[0].name : null;
-    console.log("MATCHING RESULT: ", username);
+    //console.log("MATCHING RESULT: ", username);
 
     res.status(200).send({ username });
   });

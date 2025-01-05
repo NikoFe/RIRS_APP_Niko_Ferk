@@ -1,0 +1,6 @@
+SELECT * FROM entry;
+SELECT * FROM user;
+
+
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM entry;
